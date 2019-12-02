@@ -65,9 +65,11 @@ function ElementNode(name::Symbol, nodes::Array{T}) where T <: Node
 end
 
 """Element node with attributes given like `ElementNode("widget", ["class"=>class, "name"=>name])`"""
-function ElementNode(name::Symbol, attributes::Vector{Pair{String, String}})
+function ElementNode(name::Symbol, attributes::Vector)
     ElementNode(name, [AttributeNode(name, value) for (name, value) in attributes], Node[])
 end
+
+AttributeNode(name::Symbol, value) = AttributeNode(name, string(value))
 
 ###### Public API #############
 
@@ -228,7 +230,7 @@ function show(io::IO, parent::ElementNode, depth::Integer = 0)
 
     tag = nodename(parent)
     print(io, "<$tag")
-    attrs = map(x -> x.name * "=\"$(x.value)\"", attributes(parent))
+    attrs = map(x ->  "$(x.name)=\"$(x.value)\"", attributes(parent))
     attr_str = join(attrs, " ")
 
     if !isempty(attr_str)

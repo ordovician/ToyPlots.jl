@@ -5,6 +5,9 @@ struct Circle{T <: Number} <: Shape
 	radius::T
 end
 
+Circle(x, y, r) = Circle(Point2D(x, y), r)
+Circle(radius::T) where T <: Number = Circle(zero(Point2D{T}), radius)
+
 x(c::Circle) = c.center.x
 y(c::Circle) = c.center.y
 radius(c::Circle) = c.radius

@@ -1,36 +1,33 @@
-export Svg, Style, Group, StyledShape, NoStyle, nostyle, xml
-
-abstract type Style end
-
-struct NoStyle <: Style
-    
-end
-
-const nostyle = NoStyle()
+export Svg, Group, xml
+import Base: push!
 
 struct Group <: Shape
     id::Union{Nothing, String}
     shapes::Vector{Shape}
 end
 
-struct StyledShape <: Shape
-    shape::Shape
-    style::Style
-end
-
-mutable struct Svg
-    canvas::Rect{Float64}
-    viewbox::Rect{Float64}
+mutable struct Svg{T <: Number}
+    canvas::Rect{T}
+    viewbox::Rect{T}
     shapes::Vector{Shape}
 end
 
+"""
+    Svg(width, height)
+Construct a SVG top node, which you can add shapes and groups to
+"""
 function Svg(width::Number, height::Number)
-    r = Rect(0, 0, width, height)
-    Svg(r, r)
+    r = Rect(width, height)
+    Svg(r, r, Shape[])
 end
 
+function push!(group::Union{Svg, Group}, shape::Shape...)
+   push!(group.shapes, shape...) 
+end
+
+######### XML #####################
 function xml(svg::Svg)
-    node = ElementNode("svg", [:version => "1.1", 
+    node = ElementNode(:svg, [:version => "1.1", 
                                :baseProfile => "full",
                                :xmlns   => "http://www.w3.org/2000/svg"])
 
@@ -38,7 +35,7 @@ function xml(svg::Svg)
         push!(node.attributes, AttributeNode(:x, x(svg.canvas)))
         push!(node.attributes, AttributeNode(:y, y(svg.canvas)))
     end
-    if !iszero(size(canvas))
+    if !iszero(size(svg.canvas))
         push!(node.attributes, AttributeNode(:width, width(svg.canvas)))
         push!(node.attributes, AttributeNode(:height, height(svg.canvas)))
     end
@@ -61,7 +58,7 @@ function xml(svg::Svg)
 end
 
 function xml(group::Group)
-    node = ElementNode("g")
+    node = ElementNode(:g)
     if group.id != nothing
        push!(node.attributes, AttributeNode(:id, id))
     end
@@ -70,13 +67,20 @@ function xml(group::Group)
 end
 
 function xml(r::Rect)
-    ElementNode("rect", [:x => x(r), :y => y(r)
+    ElementNode(:rect, [:x => x(r), :y => y(r),
                             :width  => width(r),
                             :height => height(r)])    
 end
 
 function xml(c::Circle)
-    ElementNode("circle", [ :cx => x(c), 
-                            :cy => y(c),
-                            :r => radius(c)])    
+    ElementNode(:circle, [ :cx => x(c), 
+                           :cy => y(c),
+                           :r => radius(c)])    
+end
+
+
+function xml(styled::StyledShape)
+    node = xml(styled.shape)
+    append!(node.attributes, xml(styled.style))
+    node
 end

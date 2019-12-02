@@ -1,7 +1,7 @@
 import Base: show
 export ScatterPlot
 
-type ScatterPlot{T <: Number}
+struct ScatterPlot{T <: Number}
     polygon::Polygon2D{T}
 end
 

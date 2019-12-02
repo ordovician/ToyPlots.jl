@@ -1,7 +1,7 @@
 import Base: getindex, setindex!, length, isempty, iterate, push!
 export Polygon2D, isintersecting, boundingbox
 
-struct Polygon2D{<:Number} <: Shape
+struct Polygon2D{T <: Number} <: Shape
 	points::Vector{Point2D{T}}
 end
 

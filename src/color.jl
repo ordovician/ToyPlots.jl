@@ -1,7 +1,16 @@
 export Color
 
-struct Color
-   red::Float64
-   green::Float64
-   blue::Float64       
+abstract type Color end
+
+struct NoColor <: Color end
+
+const nocolor = NoColor()
+
+struct NamedColor <: Color
+    name::String
 end
+
+Color(name::AbstractString) = NamedColor(name)
+
+show(io::IO, color::NoColor)    = print(io, "none")
+show(io::IO, color::NamedColor) = print(io, color.name)

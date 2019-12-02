@@ -19,6 +19,8 @@ function Rect(size::Vector2D{T}) where {T <: Number}
     Rect(origin, origin + size)
 end
 
+Rect(width, height) = Rect(Vector2D(width, height))
+
 center(r::Rect) = Point2D((r.max.x + r.min.x) * 0.5, (r.max.y + r.min.y) * 0.5)
 size(r::Rect) = r.max - r.min
 halfsize(r::Rect) = 0.5 * size(r)
