@@ -17,11 +17,11 @@ isintersecting(c::Circle, k::Circle) = norm(k.center - c.center) < c.radius + k.
 
 function isintersecting(c::Circle, r::Rect)
 	r2 = c.radius^2
-	
+
 	# translate coordinate system placing circle at center
 	rmax = r.max - c.center
 	rmin = r.min - c.center
-	
+
 	if rmax.x < 0.0
 		if rmax.y < 0.0
 			sqrnorm(rmax) < r2
@@ -56,5 +56,5 @@ isintersecting(r::Rect, c::Circle) = isintersecting(c, r)
 transform(c::Circle, m::Matrix2D) = Circle(m * c.center, c.radius)
 
 function boundingbox(c::Circle)
-    Rect(c.center - Vector2D(c.radius, c.radius), c.center + Vector2D(c.radius, c.radius))
+    Rect(c.center - Vector2D(c.radius, c.radius), 2*Vector2D(c.radius, c.radius))
 end

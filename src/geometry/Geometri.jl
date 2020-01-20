@@ -1,7 +1,7 @@
 import Base: length, abs, +, -, *, /, ==, !=, 
 			 size, ndims, eltype, similar, min, max
 
-export 	Point2D, ismin, ismax,
+export 	Point2D,
 		Vector2D, dot, cross, ⋅, ×,
 		sqrnorm, 
 		unit, 

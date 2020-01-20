@@ -1,11 +1,12 @@
 export Segment, isbelow, ison, isonend, tovector, intersection, isintersecting, intersection2
 
-struct Segment{T <: Number}
+struct Segment{T <: Number} <: Shape
 	source::Point2D{T}
 	target::Point2D{T}
 end
 
 min(s::Segment) = min(s.source, s.target)
+max(s::Segment) = max(s.source, s.target)
 
 function pointplacement(s::Segment, p::Point2D)
 	smin = min(s)
@@ -102,3 +103,7 @@ function intersection2(s1::Segment, s2::Segment)
 end
 
 isintersecting(s1::Segment, s2::Segment) = intersection(s1, s2) != nothing
+
+function boundingbox(s::Segment)
+    Rect(min(s), max(s) - min(s))
+end

@@ -5,11 +5,16 @@ struct Polygon2D{T <: Number} <: Shape
 	points::Vector{Point2D{T}}
 end
 
-function Polygon2D(r::Rect)
-	Polygon2D([bottomleft(r),
-		  bottomright(r),
-		  topright(r),
-		  topleft(r)])
+function Polygon2D(points::Point2D...)
+    Polygon(points)
+end
+
+function Polygon2D(r::Rect{T}) where T <: Number
+	Polygon2D(
+      [ min(r),
+        min(r) + Vector2(zero(T), width(r)),
+        max(r),
+        max(r) - Vector2D(zero(T), -width(r))])
 end
 
 # Implement AbstractVector interface
@@ -36,38 +41,32 @@ function sepaxis(poly::Polygon2D)
 		src = i > 1 ? points[i - 1] : last
 		result[i] = normal(unit(dst - src))
 	end
-	
+
 	return result
 end
 
 "Project each point in polygon onto axis"
-function project(poly::Polygon2D, axis::Direction2D)
-	result = similar(poly.points)
-	for i = 1:length(result)
-		result[i] = dot(poly.points[i], axis)
-	end
-	
-	return result
-end
+project(poly::Polygon2D, axis::Direction2D) = dot.(poly.points, axis)
+
 
 function isintersecting(a::Polygon2D, b::Polygon2D)
 	sep_axis = [sepaxis(a), sepaxis(b)]
 	for i = 1:length(sep_axis)
 		a_proj = project(a, sep_axis[i])
 		b_proj = project(b, sep_axis[i])
-		
+
 		a_min = min(a_proj)
 		a_max = max(a_proj)
 		b_min = min(b_proj)
 		b_max = min(b_proj)
-		
+
 		if a_min > b_max || a_max < b_min
 			return false
 		end
 	end
-	
+
 	return true
-end 
+end
 
 function isintersecting(poly::Polygon2D, circle::Circle)
 	ps = poly.points
@@ -76,7 +75,7 @@ function isintersecting(poly::Polygon2D, circle::Circle)
 			return true
 		end
 	end
-	
+
 	return isintersecting(circle, Segment(ps[end], ps[1]))
 end
 
@@ -88,30 +87,12 @@ function isinside(poly::Polygon2D, q::Point2D)
 			return false
 		end
 	end
-	
+
 	if cross(ps[1] - ps[end], q - ps[end]) <= 0.0
 		return false
 	end
-	return true 
+	return true
 end
 
-function transform(poly::Polygon2D, m::Matrix2D)
-	ps = poly.points
-	qs = similar(ps)
-	
-	for i = 1:length(ps)
-		qs[i] = m * p[i]
-	end
-	return Polygon2D(qs)
-end
-
-function boundingbox(poly::Polygon2D{T}) where T <: Number
-	h = typemin(T)
-	l = typemax(T)
-	
-	r = Rect(h, h, l, l)
-	for i = 1:lenght(poly)
-		r = surround(r, poly.points[i])
-	end
-	return r
-end
+transform(poly::Polygon2D, m::Matrix2D) = Polygon2D(m .* poly.points)
+boundingbox(poly::Polygon2D) = reduce(surround, poly.points)
