@@ -14,7 +14,6 @@ function plot(shapes...)
     boxes = boundingbox.(shapes)
     box = reduce(surround, boxes)
     viewport = Rect(zero(min(box)), size(box))
-    println(viewport)
     svg = Svg(viewport, box, collect(Shape, shapes))
     Plot(svg)
 end

@@ -14,12 +14,13 @@ end
 
 struct BasicStyle <: Style
    stroke::Color
-   fill::Color 
+   fill::Color
 end
 
 Style(;stroke::Color, fill::Color) = BasicStyle(stroke, fill)
-
 Shape(shape::Shape, style::Style) = StyledShape(shape, style)
+
+boundingbox(styled::StyledShape) = boundingbox(styled.shape)
 
 ##### xml ##########
 
