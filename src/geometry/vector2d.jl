@@ -18,7 +18,7 @@ for T in [:Point2D, :Vector2D, :Direction2D]
 end
 
 
-function unit(v::Vector2D)  
+function unit(v::Vector2D)
 	len = norm(v);
 	Direction2D(v.x/len, v.y/len)
 end
@@ -28,7 +28,7 @@ dot(u::VecOrDir, v::VecOrDir) = u.x*v.x + u.y*v.y
 cross(u::VecOrDir, v::VecOrDir) = u.x*v.y - u.y*v.x
 abs(v::VecOrDir) = Vector2D(abs(v.x), abs(v.y))
 angle(v::VecOrDir) = atan2(v.y, v.x)
-  
+
 const ⋅ = dot
 const × = cross
 
@@ -37,6 +37,9 @@ const × = cross
 *(factor::Number, v::VecOrDir) = Vector2D(v.x * factor, v.y * factor)
 *(v::VecOrDir, factor::Number) = Vector2D(v.x * factor, v.y * factor)
 /(v::VecOrDir, factor::Number) = Vector2D(v.x / factor, v.y / factor)
+
+-(p::PointOrVec, k::Number) = typeof(p)(p.x - k, p.y - k)
++(p::PointOrVec, k::Number) = typeof(p)(p.x + k, p.y + k)
 
 mincomp(u::T, v::T) where {T <: PointVecOrDir} = T(min(u.x, v.x), min(u.y, v.y))
 maxcomp(u::T, v::T)  where {T <: PointVecOrDir} = T(max(u.x, v.x), max(u.y, v.y))

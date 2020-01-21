@@ -78,6 +78,18 @@ function xml(c::Circle)
                            :r => radius(c)])
 end
 
+function pointsxml(points::Vector{Point2D{T}}) where T<:Number
+    pointstr(p::Point2D) = string(p.x, ",", p.y)
+    join(pointstr.(points), " ")
+end
+
+function xml(poly::Polygon2D)
+    ElementNode(:polygon, [:points => pointsxml(poly.points)])
+end
+
+function xml(poly::Polyline2D)
+    ElementNode(:polyline, [:points => pointsxml(poly.points)])
+end
 
 function xml(styled::StyledShape)
     node = xml(styled.shape)

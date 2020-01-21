@@ -1,7 +1,7 @@
 import  Base: zero, min, max
 export  Rect, isinside, isintersecting, transform, boundingbox,
         center, size, halfsize, x, y, width, height,
-        translate
+        translate, padded
 
 struct Rect{T} <: Shape
 	origin::Point2D{T}
@@ -64,3 +64,7 @@ end
 boundingbox(r::Rect) = r
 
 translate(r::Rect, Δ::Vector2D) = Rect(r.min + Δ, r.max + Δ)
+
+function padded(r::Rect, padding::Number)
+	Rect(min(r) - padding/2, size(r) + padding/2)
+end

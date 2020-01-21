@@ -7,7 +7,7 @@ Gives origin for a point of a particular type
 """
 zero(::Type{Point2D{T}}) where T <: Number = Point2D{T}(zero(T), zero(T))
 zero(p::Point2D{<:Number}) = zero(typeof(p))
-  
+
 <(p::Point2D, q::Point2D) = p.x < q.x || (p.x == q.x && p.y < q.y)
 >(p::Point2D, q::Point2D) = p.x > q.x || (p.x == q.x && p.y > q.y)
 min(u::Point2D, v::Point2D) = u < v ? u : v

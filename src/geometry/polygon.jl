@@ -1,12 +1,22 @@
 import Base: getindex, setindex!, length, isempty, iterate, push!
-export Polygon2D, isintersecting, boundingbox
+export Poly2D, Polygon2D, Polyline2D, isintersecting, boundingbox
+
+struct Polyline2D{T <: Number} <: Shape
+	points::Vector{Point2D{T}}
+end
 
 struct Polygon2D{T <: Number} <: Shape
 	points::Vector{Point2D{T}}
 end
 
+const Poly2D = Union{Polyline2D, Polygon2D}
+
 function Polygon2D(points::Point2D...)
-    Polygon(points)
+    Polygon2D(collect(points))
+end
+
+function Polyline2D(points::Point2D...)
+    Polyline2D(collect(points))
 end
 
 function Polygon2D(r::Rect{T}) where T <: Number
@@ -18,18 +28,18 @@ function Polygon2D(r::Rect{T}) where T <: Number
 end
 
 # Implement AbstractVector interface
-getindex(poly::Polygon2D, i) = getindex(poly.points, i)
+getindex(poly::Poly2D, i) = getindex(poly.points, i)
 
-function setindex!(poly::Polygon2D{Point2D{T}}, value::Point2D{T}, i) where T <: Number
+function setindex!(poly::Poly2D, value::Point2D, i)
     setindex!(poly.points, value, i)
 end
 
-length( poly::Polygon2D)    = length( poly.points)
-isempty(poly::Polygon2D)    = isempty(poly.points)
-iterate(poly::Polygon2D)    = iterate(poly.points)
-iterate(poly::Polygon2D, i) = iterate(poly.points, i)
+length( poly::Poly2D)    = length( poly.points)
+isempty(poly::Poly2D)    = isempty(poly.points)
+iterate(poly::Poly2D)    = iterate(poly.points)
+iterate(poly::Poly2D, i) = iterate(poly.points, i)
 
-push!(poly::Polygon2D, p) = push!(poly.points, p)
+push!(poly::Poly2D, p) = push!(poly.points, p)
 
 "List of the normals on each polygon edge"
 function sepaxis(poly::Polygon2D)
@@ -94,5 +104,5 @@ function isinside(poly::Polygon2D, q::Point2D)
 	return true
 end
 
-transform(poly::Polygon2D, m::Matrix2D) = Polygon2D(m .* poly.points)
-boundingbox(poly::Polygon2D) = reduce(surround, poly.points)
+transform(poly::Poly2D, m::Matrix2D) = Polygon2D(m .* poly.points)
+boundingbox(poly::Poly2D) = reduce(surround, poly.points)
