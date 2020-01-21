@@ -4,6 +4,14 @@ import Base: push!
 struct Group <: Shape
     id::Union{Nothing, String}
     shapes::Vector{Shape}
+    transform::Union{Nothing, Transform}
+end
+
+Group(id, shapes::Vector{Shape}) = Group(id, shapes, nothing)
+Group(shapes::Vector{Shape}, tranform::Transform) = Group(nothing, shapes, tranform)
+
+function boundingbox(group::Group)
+    reduce(surround, boundingbox.(group.shapes))
 end
 
 mutable struct Svg{T <: Number}
@@ -62,7 +70,10 @@ function xml(group::Group)
     if group.id != nothing
        push!(node.attributes, AttributeNode(:id, id))
     end
-    node.children =  Node[xml(shape) for shape in svg.shapes]
+    if group.transform != nothing
+        push!(node.attributes, AttributeNode(:transform, string(group.transform)))
+    end
+    node.children =  Node[xml(shape) for shape in group.shapes]
     node
 end
 

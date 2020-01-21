@@ -44,7 +44,7 @@ mutable struct ElementNode <: Node
     children::Vector{Node}
 end
 
-function ElementNode(name::AbstractString)
+function ElementNode(name::Symbol)
     ElementNode(name, AttributeNode[], Node[])
 end
 
@@ -167,7 +167,7 @@ end
 addchild!(parent::ElementNode, child::Node) = push!(parent.children, child)
 
 function addchildren!(p::Node, children)
-    error("Can't add children to nodes of type $(typeof(p))")    
+    error("Can't add children to nodes of type $(typeof(p))")
 end
 
 """
@@ -252,7 +252,7 @@ function show(io::IO, parent::ElementNode, depth::Integer = 0)
         end
         print(io, "  "^depth)
     end
-    
+
     if len != 0
         println(io, "</$tag>")
     end
