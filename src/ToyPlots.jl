@@ -9,8 +9,7 @@ include("color.jl")
 include("style.jl")
 include("svg.jl")
 
-# include("polygon-plot.jl")
-# include("scatter-plot.jl")
 include("svg-plot.jl")
+include("drawing.jl")
 
 end # module
